@@ -1,0 +1,19 @@
+# 1. Disk Usage Audit
+echo "=== Disk Usage Audit (Top Level) ==="
+du -h -d 1 "$HOME" 2>/dev/null | sort -hr
+
+# 2. Package and Runtime Cache Purge
+echo "=== Cleaning Package Caches ==="
+pkg clean
+# Only run npm if installed to avoid "command not found" errors
+command -v npm >/dev/null && npm cache clean --force
+# Only run pip if installed
+command -v python3 >/dev/null && python3 -m pip cache purge
+
+# 3. Stale Log and Temp File Removal
+echo "=== Purging Stale Logs and Caches ==="
+find "$HOME" -name "env_audit_*.txt" -mtime +7 -delete
+rm -rf ~/.cache/* ~/.pytest_cache
+
+echo "=== Final Storage Status ==="
+df -h .
